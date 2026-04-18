@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS Tournament Pro | Gamer Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --main: #2c7be5; --bg: #f8f9fc; --white: #ffffff; --orange: #f6ad55; --dark: #1e293b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); font-family: 'Poppins', sans-serif; padding-bottom: 70px; }
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 5000; display: none; justify-content: center; align-items: center; text-align: center; }
+        header { background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top:0; z-index: 1000; }
+        .logo { font-weight: 800; color: var(--main); font-size: 20px; }
+        .balance { background: #eef2ff; color: var(--main); padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 14px; }
+        .container { padding: 15px; }
+        .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .card-img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
+        .card-body { padding: 15px; }
+        .progress-bar { height: 7px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--orange); transition: 0.5s; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 12px; text-align: center; }
+        .btn-main { background: var(--main); color: #fff; }
+        .btn-dark { background: var(--dark); color: #fff; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--main); }
+        .nav-item i { font-size: 18px; display: block; margin-bottom: 3px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #eee; border-radius: 10px; background: #f9f9f9; }
+        .section { display: none; }
+        .section.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="authOverlay">
+        <div style="width: 85%; max-width: 350px;">
+            <h2 style="color:var(--dark)">Welcome Gamer</h2>
+            <input type="text" id="logName" placeholder="Full Name">
+            <input type="number" id="logPhone" placeholder="Phone Number">
+            <button class="btn btn-main" style="width: 100%; padding: 15px;" onclick="userLogin()">JOIN ARENA</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">PS PRO</div>
+        <div class="balance">৳<span id="balDisplay">0</span></div>
+    </header>
+
+    <marquee id="ann" style="background:#1e293b; color:white; padding:5px; font-size:11px;"></marquee>
+
+    <div class="container">
+        <div id="homeSec" class="section active"><div id="tourneyList"></div></div>
+        
+        <div id="walletSec" class="section">
+            <div style="background:var(--main); color:white; padding:30px; border-radius:20px; text-align:center;">
+                <p style="font-size:12px; opacity:0.8;">Account Balance</p>
+                <h1 style="font-size:32px;">৳<span id="walletBal">0</span></h1>
+            </div>
+            <div style="margin-top:20px; background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
+                <p style="font-size:12px; margin-bottom:10px;"><b>Payments:</b> Bkash: <span id="pBkash">--</span> | Nagad: <span id="pNagad">--</span></p>
+                <input type="number" id="wAmt" placeholder="Amount">
+                <input type="text" id="wInfo" placeholder="TrxID / Phone">
+                <div class="btn-grid">
+                    <button class="btn btn-main" onclick="walletReq('Deposit')">DEPOSIT</button>
+                    <button class="btn btn-dark" style="background:#f5365c" onclick="walletReq('Withdraw')">WITHDRAW</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="profileSec" class="section">
+            <div style="background:#fff; padding:30px; border-radius:20px; text-align:center; border:1px solid #eee;">
+                <h2 id="uName">Name</h2><p id="uPhone">017XXXXXXXX</p>
+                <button class="btn btn-dark" style="width:100%; margin-top:20px;" onclick="localStorage.clear(); location.reload();">LOGOUT</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchNav('home', this)"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-item" onclick="switchNav('wallet', this)"><i class="fas fa-wallet"></i>Wallet</button>
+        <button class="nav-item" onclick="switchNav('profile', this)"><i class="fas fa-user-circle"></i>Profile</button>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD76FQ9ta6WBZy1VeM7R4udMBAJI87lyJw",
+            authDomain: "ps-tournament-pro.firebaseapp.com",
+            databaseURL: "https://ps-tournament-pro-default-rtdb.firebaseio.com",
+            projectId: "ps-tournament-pro",
+            storageBucket: "ps-tournament-pro.firebasestorage.app",
+            messagingSenderId: "380443580253",
+            appId: "1:380443580253:web:0f0be3e9b8bd8501923ab4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let user = JSON.parse(localStorage.getItem('ps_user'));
+        if(!user) document.getElementById('authOverlay').style.display='flex'; else startApp();
+
+        function userLogin() {
+            const name = document.getElementById('logName').value;
+            const phone = document.getElementById('logPhone').value;
+            if(!name || phone.length < 11) return alert("Valid Info Required");
+            db.ref('users/'+phone).once('value', s => {
+                if(s.val() && s.val().status === 'Blocked') return alert("Blocked!");
+                if(!s.exists()) db.ref('users/'+phone).set({name, phone, balance:0, status:'Active'});
+                localStorage.setItem('ps_user', JSON.stringify({name, phone}));
+                location.reload();
+            });
+        }
+
+        function startApp() {
+            db.ref('users/'+user.phone).on('value', s => {
+                if(!s.val() || s.val().status === 'Blocked') { logout(); return; }
+                document.getElementById('uName').innerText = s.val().name;
+                document.getElementById('uPhone').innerText = user.phone;
+                document.getElementById('balDisplay').innerText = s.val().balance || 0;
+                document.getElementById('walletBal').innerText = s.val().balance || 0;
+            });
+            db.ref('announcement').on('value', s => { document.getElementById('ann').innerText = s.val() || ''; });
+            db.ref('admin_numbers').on('value', s => {
+                if(s.val()) { document.getElementById('pBkash').innerText = s.val().bkash; document.getElementById('pNagad').innerText = s.val().nagad; }
+            });
+            renderTournaments();
+        }
+
+        function switchNav(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById(id + 'Sec').classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function renderTournaments() {
+            db.ref('tournaments').on('value', s => {
+                const list = document.getElementById('tourneyList'); list.innerHTML = '';
+                s.forEach(child => {
+                    const t = child.val();
+                    const pCount = t.players ? Object.keys(t.players).length : 0;
+                    list.innerHTML += `
+                    <div class="card">
+                        <img src="${t.poster || 'https://via.placeholder.com/400x200?text=Gaming'}" class="card-img">
+                        <div class="card-body">
+                            <h2 style="font-size:18px;">${t.title}</h2>
+                            <p style="font-size:12px; color:#888;">Fee: ৳${t.fee} | Prize: ৳${t.prize}</p>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${(pCount/100)*100}%"></div></div>
+                            <div class="btn-grid">
+                                <button class="btn btn-main" onclick="joinT('${child.key}', ${t.fee})">JOIN</button>
+                                <button class="btn btn-dark" onclick="alert('ID: ${t.roomId || 'Wait'}\\nPass: ${t.roomPass || 'Wait'}')">ID & PASS</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        function joinT(id, fee) {
+            const bal = parseInt(document.getElementById('balDisplay').innerText);
+            if(bal < fee) return alert("Low Balance!");
+            if(confirm("Join for ৳"+fee+"?")) {
+                db.ref(`tournaments/${id}/players/${user.phone}`).set(user);
+                db.ref(`users/${user.phone}/balance`).set(bal - fee);
+                alert("Joined!");
+            }
+        }
+
+        function walletReq(type) {
+            const amt = document.getElementById('wAmt').value;
+            const info = document.getElementById('wInfo').value;
+            if(!amt || !info) return alert("Fill data");
+            db.ref('wallet_requests/' + Date.now()).set({ phone: user.phone, userName: user.name, amount: parseInt(amt), info, type, status: 'Pending' });
+            alert("Request Sent!");
+        }
+        function logout() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+</html>
