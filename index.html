@@ -1,80 +1,115 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS Tournament Pro | Gamer Arena</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>PS Tournament Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --main: #2c7be5; --bg: #f8f9fc; --white: #ffffff; --orange: #f6ad55; --dark: #1e293b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); font-family: 'Poppins', sans-serif; padding-bottom: 70px; }
-        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 5000; display: none; justify-content: center; align-items: center; text-align: center; }
-        header { background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top:0; z-index: 1000; }
-        .logo { font-weight: 800; color: var(--main); font-size: 20px; }
-        .balance { background: #eef2ff; color: var(--main); padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 14px; }
+        :root { --main: #2c7be5; --bg: #f8f9fc; --white: #fff; --orange: #f6ad55; --dark: #1e293b; --green: #2dce89; --red: #f5365c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
+
+        .whatsapp-fab { position: fixed; bottom: 85px; right: 20px; background: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top:0; z-index: 1000; }
+        .logo { font-weight: 800; color: var(--main); font-size: 18px; }
+        .balance-badge { background: #eef2ff; color: var(--main); padding: 5px 15px; border-radius: 50px; font-weight: 700; font-size: 14px; }
+
+        marquee { background: var(--dark); color: white; padding: 5px; font-size: 11px; font-weight: 600; }
+
         .container { padding: 15px; }
-        .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-        .card-img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
+        .card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .card-img { width: 100%; height: 160px; object-fit: cover; cursor: pointer; }
         .card-body { padding: 15px; }
-        .progress-bar { height: 7px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--orange); transition: 0.5s; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 12px; text-align: center; }
+
+        .progress-container { height: 7px; background: #eee; border-radius: 10px; margin: 10px 0; }
+        .progress-bar { height: 100%; background: var(--orange); border-radius: 10px; transition: 0.5s; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 12px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-main { background: var(--main); color: #fff; }
         .btn-dark { background: var(--dark); color: #fff; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
+        .btn-outline { background: #f1f5f9; color: var(--dark); border: 1px solid #ddd; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
         .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; }
         .nav-item.active { color: var(--main); }
-        .nav-item i { font-size: 18px; display: block; margin-bottom: 3px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #eee; border-radius: 10px; background: #f9f9f9; }
-        .section { display: none; }
-        .section.active { display: block; }
+        .nav-item i { font-size: 18px; display: block; margin-bottom: 4px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #fff; width: 90%; max-width: 380px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+        
+        .profile-pic { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
+        .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; display: flex; justify-content: space-between; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; background: #f9f9f9; outline: none; }
+        .section { display: none; } .section.active { display: block; }
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="authOverlay">
         <div style="width: 85%; max-width: 350px;">
-            <h2 style="color:var(--dark)">Welcome Gamer</h2>
+            <div style="background:var(--main); width:70px; height:70px; border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:30px;"><i class="fas fa-gamepad"></i></div>
+            <h2>Sign In</h2>
             <input type="text" id="logName" placeholder="Full Name">
-            <input type="number" id="logPhone" placeholder="Phone Number">
-            <button class="btn btn-main" style="width: 100%; padding: 15px;" onclick="userLogin()">JOIN ARENA</button>
+            <input type="number" id="logPhone" placeholder="WhatsApp Number">
+            <button class="btn btn-main" style="width:100%; margin-top:10px" onclick="userLogin()">ENTER ARENA</button>
         </div>
     </div>
 
+    <a href="#" id="waLink" class="whatsapp-fab" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
     <header>
         <div class="logo">PS PRO</div>
-        <div class="balance">৳<span id="balDisplay">0</span></div>
+        <div class="balance-badge">৳<span id="balDisplay">0</span></div>
     </header>
 
-    <marquee id="ann" style="background:#1e293b; color:white; padding:5px; font-size:11px;"></marquee>
+    <marquee id="annTicker">Welcome to PS Tournament Pro!</marquee>
 
     <div class="container">
         <div id="homeSec" class="section active"><div id="tourneyList"></div></div>
-        
+
         <div id="walletSec" class="section">
-            <div style="background:var(--main); color:white; padding:30px; border-radius:20px; text-align:center;">
+            <div style="background:linear-gradient(135deg, var(--main), #6366f1); color:white; padding:30px; border-radius:25px; text-align:center; margin-bottom:20px;">
                 <p style="font-size:12px; opacity:0.8;">Account Balance</p>
-                <h1 style="font-size:32px;">৳<span id="walletBal">0</span></h1>
+                <h1 style="font-size:35px;">৳<span id="walletBal">0</span></h1>
+                <button class="btn" style="background:rgba(255,255,255,0.2); margin:10px auto 0;" onclick="openHistory()">History</button>
             </div>
-            <div style="margin-top:20px; background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
-                <p style="font-size:12px; margin-bottom:10px;"><b>Payments:</b> Bkash: <span id="pBkash">--</span> | Nagad: <span id="pNagad">--</span></p>
+            <div style="background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
+                <p style="font-size:12px; margin-bottom:10px;"><b>Admin Numbers:</b> Bkash: <span id="pBkash">--</span> | Nagad: <span id="pNagad">--</span></p>
                 <input type="number" id="wAmt" placeholder="Amount">
                 <input type="text" id="wInfo" placeholder="TrxID / Phone">
                 <div class="btn-grid">
-                    <button class="btn btn-main" onclick="walletReq('Deposit')">DEPOSIT</button>
-                    <button class="btn btn-dark" style="background:#f5365c" onclick="walletReq('Withdraw')">WITHDRAW</button>
+                    <button class="btn btn-main" style="background:var(--green)" onclick="walletReq('Deposit')">DEPOSIT</button>
+                    <button class="btn btn-main" style="background:var(--red)" onclick="walletReq('Withdraw')">WITHDRAW</button>
                 </div>
             </div>
         </div>
 
         <div id="profileSec" class="section">
-            <div style="background:#fff; padding:30px; border-radius:20px; text-align:center; border:1px solid #eee;">
-                <h2 id="uName">Name</h2><p id="uPhone">017XXXXXXXX</p>
-                <button class="btn btn-dark" style="width:100%; margin-top:20px;" onclick="localStorage.clear(); location.reload();">LOGOUT</button>
+            <div style="background:#fff; padding:30px; border-radius:25px; text-align:center; border:1px solid #eee;">
+                <img id="uPhoto" src="https://ui-avatars.com/api/?name=Gamer" class="profile-pic">
+                <h2 id="uNameDisplay">Name</h2><p id="uPhoneDisplay">Phone</p>
+                <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="openProfileEdit()">Edit Profile</button>
+                <button class="btn btn-dark" style="width:100%; margin-top:10px;" onclick="logout()">LOGOUT</button>
             </div>
+            <div style="margin-top:20px; background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
+                <h3>Report Issue</h3>
+                <textarea id="repMsg" placeholder="Message to Admin..."></textarea>
+                <button class="btn btn-main" style="width:100%" onclick="sendReport()">SEND REPORT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalBox" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Title</h3>
+            <div id="modalBody"></div>
+            <button class="btn btn-dark" style="width:100%; margin-top:15px;" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
@@ -116,24 +151,22 @@
 
         function startApp() {
             db.ref('users/'+user.phone).on('value', s => {
-                if(!s.val() || s.val().status === 'Blocked') { logout(); return; }
-                document.getElementById('uName').innerText = s.val().name;
-                document.getElementById('uPhone').innerText = user.phone;
-                document.getElementById('balDisplay').innerText = s.val().balance || 0;
-                document.getElementById('walletBal').innerText = s.val().balance || 0;
+                const u = s.val(); if(!u || u.status === 'Blocked') { logout(); return; }
+                document.getElementById('uNameDisplay').innerText = u.name;
+                document.getElementById('uPhoneDisplay').innerText = user.phone;
+                document.getElementById('uPhoto').src = u.photo || `https://ui-avatars.com/api/?name=${u.name}&background=random`;
+                document.getElementById('balDisplay').innerText = u.balance || 0;
+                document.getElementById('walletBal').innerText = u.balance || 0;
             });
-            db.ref('announcement').on('value', s => { document.getElementById('ann').innerText = s.val() || ''; });
+            db.ref('announcement').on('value', s => { document.getElementById('annTicker').innerText = s.val() || ''; });
             db.ref('admin_numbers').on('value', s => {
-                if(s.val()) { document.getElementById('pBkash').innerText = s.val().bkash; document.getElementById('pNagad').innerText = s.val().nagad; }
+                if(s.val()) {
+                    document.getElementById('pBkash').innerText = s.val().bkash;
+                    document.getElementById('pNagad').innerText = s.val().nagad;
+                    document.getElementById('waLink').href = "https://wa.me/" + s.val().support;
+                }
             });
             renderTournaments();
-        }
-
-        function switchNav(id, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            document.getElementById(id + 'Sec').classList.add('active');
-            btn.classList.add('active');
         }
 
         function renderTournaments() {
@@ -142,16 +175,22 @@
                 s.forEach(child => {
                     const t = child.val();
                     const pCount = t.players ? Object.keys(t.players).length : 0;
+                    const limit = t.limit || 100;
                     list.innerHTML += `
                     <div class="card">
-                        <img src="${t.poster || 'https://via.placeholder.com/400x200?text=Gaming'}" class="card-img">
+                        <img src="${t.poster || 'https://via.placeholder.com/400x200?text=Gaming'}" class="card-img" onclick="showResult('${t.resultImg}')">
                         <div class="card-body">
-                            <h2 style="font-size:18px;">${t.title}</h2>
-                            <p style="font-size:12px; color:#888;">Fee: ৳${t.fee} | Prize: ৳${t.prize}</p>
-                            <div class="progress-bar"><div class="progress-fill" style="width:${(pCount/100)*100}%"></div></div>
+                            <h2 style="font-size:17px;">${t.title}</h2>
+                            <p style="font-size:12px; color:#888;">৳${t.fee} | ৳${t.prize} | ${t.time}</p>
+                            <div class="progress-container"><div class="progress-bar" style="width:${(pCount/limit)*100}%"></div></div>
+                            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px;">
+                                <span>Slots: ${pCount}/${limit}</span>
+                                <span style="color:var(--main); font-weight:700" onclick="viewPlayers('${child.key}')">View Players</span>
+                            </div>
                             <div class="btn-grid">
-                                <button class="btn btn-main" onclick="joinT('${child.key}', ${t.fee})">JOIN</button>
-                                <button class="btn btn-dark" onclick="alert('ID: ${t.roomId || 'Wait'}\\nPass: ${t.roomPass || 'Wait'}')">ID & PASS</button>
+                                <button class="btn btn-main" onclick="joinWithRules('${child.key}', ${t.fee}, ${pCount}, ${limit}, '${t.rules || 'No rules'}')">JOIN</button>
+                                <button class="btn btn-dark" onclick="showRoom('${child.key}')">ID & PASS</button>
+                                ${t.stream ? `<a href="${t.stream}" class="btn btn-outline" target="_blank">LIVE</a>` : ''}
                             </div>
                         </div>
                     </div>`;
@@ -159,24 +198,77 @@
             });
         }
 
-        function joinT(id, fee) {
-            const bal = parseInt(document.getElementById('balDisplay').innerText);
-            if(bal < fee) return alert("Low Balance!");
-            if(confirm("Join for ৳"+fee+"?")) {
-                db.ref(`tournaments/${id}/players/${user.phone}`).set(user);
-                db.ref(`users/${user.phone}/balance`).set(bal - fee);
-                alert("Joined!");
-            }
+        function openProfileEdit() {
+            openModal("Edit Profile", `
+                <input type="text" id="newName" placeholder="New Name">
+                <input type="text" id="newPhoto" placeholder="Photo URL (Direct Link)">
+                <button class="btn btn-main" style="width:100%" onclick="saveProfile()">UPDATE</button>
+            `);
+            db.ref('users/'+user.phone).once('value', s => {
+                document.getElementById('newName').value = s.val().name;
+                document.getElementById('newPhoto').value = s.val().photo || '';
+            });
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('newName').value;
+            const photo = document.getElementById('newPhoto').value;
+            db.ref('users/'+user.phone).update({name, photo});
+            db.ref('profile_updates/'+user.phone).set({name, photo, phone: user.phone, time: new Date().toLocaleString()});
+            closeModal(); alert("Profile Updated!");
+        }
+
+        function joinWithRules(id, fee, count, limit, rules) {
+            if(count >= limit) return alert("Full!");
+            openModal("Match Rules", `<p style="font-size:13px; color:#555">${rules}</p><button class="btn btn-main" style="width:100%; margin-top:15px" onclick="confirmJoin('${id}', ${fee})">AGREE & JOIN</button>`);
+        }
+
+        function confirmJoin(id, fee) {
+            db.ref('users/'+user.phone+'/balance').once('value', s => {
+                if((s.val() || 0) < fee) return alert("Low Balance!");
+                db.ref(`tournaments/${id}/players/${user.phone}`).set({name: user.name});
+                db.ref(`users/${user.phone}/balance`).transaction(c => (c || 0) - fee);
+                closeModal(); alert("Joined!");
+            });
+        }
+
+        function openHistory() {
+            db.ref('wallet_requests').once('value', s => {
+                let html = ""; s.forEach(c => {
+                    const r = c.val(); if(r.phone === user.phone) html += `<div class="history-item"><span>${r.type} ৳${r.amount}</span> <b>${r.status}</b></div>`;
+                });
+                openModal("History", html || "No records.");
+            });
+        }
+
+        function showRoom(id) {
+            db.ref('tournaments/'+id).once('value', s => {
+                const t = s.val(); if(t.players && t.players[user.phone]) alert(`ID: ${t.roomId || 'Wait'}\nPass: ${t.roomPass || 'Wait'}`);
+                else alert("Join first!");
+            });
+        }
+
+        function viewPlayers(id) {
+            db.ref('tournaments/'+id+'/players').once('value', s => {
+                let h = ""; s.forEach(p => h += `<div class="history-item">${p.val().name}</div>`);
+                openModal("Players", h || "Empty.");
+            });
         }
 
         function walletReq(type) {
-            const amt = document.getElementById('wAmt').value;
+            const amt = parseInt(document.getElementById('wAmt').value);
             const info = document.getElementById('wInfo').value;
             if(!amt || !info) return alert("Fill data");
-            db.ref('wallet_requests/' + Date.now()).set({ phone: user.phone, userName: user.name, amount: parseInt(amt), info, type, status: 'Pending' });
+            db.ref('wallet_requests/'+Date.now()).set({phone:user.phone, userName:user.name, amount:amt, info, type, status:'Pending'});
             alert("Request Sent!");
         }
+
+        function showResult(img) { if(img) openModal("Result", `<img src="${img}" style="width:100%">`); }
+        function sendReport() { db.ref('reports/'+Date.now()).set({phone:user.phone, userName:user.name, message:document.getElementById('repMsg').value}); alert("Sent!"); }
+        function openModal(t, b) { document.getElementById('modalTitle').innerText = t; document.getElementById('modalBody').innerHTML = b; document.getElementById('modalBox').style.display='flex'; }
+        function closeModal() { document.getElementById('modalBox').style.display='none'; }
+        function switchNav(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); document.getElementById(id+'Sec').classList.add('active'); btn.classList.add('active'); }
         function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
-</html>
+                                                                         </html>
