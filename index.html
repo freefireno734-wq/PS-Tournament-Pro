@@ -1,122 +1,275 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS Tournament Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>PS Tournament Pro | Elite Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --main: #2c7be5; --bg: #f8f9fc; --white: #fff; --orange: #f6ad55; --dark: #1e293b; --green: #2dce89; --red: #f5365c; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
 
-        .whatsapp-fab { position: fixed; bottom: 85px; right: 20px; background: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        /* ===== LOADING SPLASH ===== */
+        #loadOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index: 8888; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; transition: opacity 0.4s; }
+        #loadOverlay.hide { opacity: 0; pointer-events: none; }
+        .load-logo { background: linear-gradient(135deg, var(--main), #6366f1); width: 70px; height: 70px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; animation: logoPulse 1.6s ease-in-out infinite; box-shadow: 0 15px 35px rgba(44,123,229,0.3); }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);box-shadow:0 15px 35px rgba(44,123,229,0.3)} 50%{transform:scale(1.07);box-shadow:0 20px 45px rgba(44,123,229,0.5)} }
+        .load-dots { display: flex; gap: 7px; }
+        .load-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--main); animation: dotBounce 1.2s ease-in-out infinite; opacity: 0.4; }
+        .load-dot:nth-child(1){animation-delay:0s} .load-dot:nth-child(2){animation-delay:0.2s} .load-dot:nth-child(3){animation-delay:0.4s}
+        @keyframes dotBounce { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-9px);opacity:1} }
+        .load-text { font-size: 12px; color: #94a3b8; font-weight: 600; letter-spacing: 1px; }
 
-        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top:0; z-index: 1000; }
-        .logo { font-weight: 800; color: var(--main); font-size: 18px; }
-        .balance-badge { background: #eef2ff; color: var(--main); padding: 5px 15px; border-radius: 50px; font-weight: 700; font-size: 14px; }
+        /* ===== SKELETON LOADING ===== */
+        .skeleton { background: linear-gradient(90deg, #e8edf2 25%, #f5f7fa 50%, #e8edf2 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .sk-card { background: var(--white); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid #eee; }
+        .sk-img { width: 100%; height: 160px; border-radius: 0; }
+        .sk-body { padding: 15px; }
+        .sk-line { height: 13px; margin: 10px 0; }
+        .sk-btn { height: 44px; border-radius: 12px; }
 
-        marquee { background: var(--dark); color: white; padding: 5px; font-size: 11px; font-weight: 600; }
+        /* ===== TOAST ===== */
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-15px); color: white; padding: 10px 18px; border-radius: 50px; font-size: 13px; z-index: 9999; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.3s, transform 0.3s; align-items: center; gap: 8px; font-weight: 600; background: var(--dark); }
+        #toast.show { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.t-success { background: var(--green); }
+        #toast.t-error { background: var(--red); }
+        #toast.t-info { background: var(--main); }
 
+        /* ===== AUTH OVERLAY ===== */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(160deg, #e8f0ff 0%, #f0f4ff 50%, #f8f9fc 100%); z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; }
+        .auth-card { width: 88%; max-width: 360px; background: #fff; padding: 38px 28px; border-radius: 30px; box-shadow: 0 25px 60px rgba(44,123,229,0.13); animation: slideUpFade 0.5s ease; }
+        @keyframes slideUpFade { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .auth-icon { background: linear-gradient(135deg, var(--main), #6366f1); width: 75px; height: 75px; border-radius: 24px; margin: 0 auto 22px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 34px; box-shadow: 0 12px 30px rgba(44,123,229,0.35); }
+        .auth-title { font-size: 22px; font-weight: 800; color: var(--dark); }
+        .auth-sub { font-size: 12px; color: #94a3b8; margin: 5px 0 22px; }
+
+        /* ===== WHATSAPP FAB ===== */
+        .whatsapp-fab { position: fixed; bottom: 85px; right: 20px; background: #25d366; color: white; width: 52px; height: 52px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 0 6px 20px rgba(37,211,102,0.45); z-index: 1000; text-decoration: none; transition: transform 0.25s, box-shadow 0.25s; }
+        .whatsapp-fab:hover { transform: scale(1.12); box-shadow: 0 10px 28px rgba(37,211,102,0.55); }
+
+        /* ===== HEADER ===== */
+        header { background: var(--white); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: sticky; top:0; z-index: 1000; }
+        .logo { font-weight: 800; color: var(--main); font-size: 19px; letter-spacing: -0.5px; }
+        .logo span { color: var(--dark); }
+        .balance-badge { background: linear-gradient(135deg, #eef2ff, #e8f0ff); color: var(--main); padding: 6px 16px; border-radius: 50px; font-weight: 700; font-size: 14px; border: 1.5px solid rgba(44,123,229,0.18); }
+
+        /* ===== TICKER ===== */
+        .ticker-bar { background: linear-gradient(90deg, var(--dark), #334155); color: white; padding: 7px 15px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .ticker-bar marquee { flex: 1; background: none; padding: 0; }
+        .ticker-label { background: var(--orange); color: var(--dark); padding: 2px 9px; border-radius: 50px; font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+
+        /* ===== CONTAINER & SECTIONS ===== */
         .container { padding: 15px; }
-        .card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .section { display: none; animation: secFadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes secFadeIn { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ===== CARDS ===== */
+        .card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 5px 18px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; transition: transform 0.22s, box-shadow 0.22s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.09); }
         .card-img { width: 100%; height: 160px; object-fit: cover; cursor: pointer; }
         .card-body { padding: 15px; }
 
-        .progress-container { height: 7px; background: #eee; border-radius: 10px; margin: 10px 0; }
-        .progress-bar { height: 100%; background: var(--orange); border-radius: 10px; transition: 0.5s; }
+        /* ===== STATUS BADGE ===== */
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; margin-bottom: 8px; }
+        .s-open { background: #dcfce7; color: #16a34a; }
+        .s-closed { background: #fee2e2; color: #dc2626; }
+        .s-full { background: #fff7ed; color: #ea580c; }
+        .s-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: sDotPulse 2s ease-in-out infinite; }
+        @keyframes sDotPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
+        /* ===== PROGRESS ===== */
+        .progress-container { height: 7px; background: #eee; border-radius: 10px; margin: 10px 0; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--orange), #f97316); border-radius: 10px; transition: width 0.7s ease; }
+
+        /* ===== BUTTONS ===== */
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 12px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-main { background: var(--main); color: #fff; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 12px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.15s, opacity 0.15s; }
+        .btn:active { transform: scale(0.95); opacity: 0.82; }
+        .btn-main { background: linear-gradient(135deg, var(--main), #3b82f6); color: #fff; box-shadow: 0 4px 14px rgba(44,123,229,0.3); }
         .btn-dark { background: var(--dark); color: #fff; }
         .btn-outline { background: #f1f5f9; color: var(--dark); border: 1px solid #ddd; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; }
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0 14px; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; padding: 4px 16px; border-radius: 14px; transition: color 0.2s; position: relative; }
         .nav-item.active { color: var(--main); }
-        .nav-item i { font-size: 18px; display: block; margin-bottom: 4px; }
+        .nav-item.active i { transform: scale(1.12); }
+        .nav-item i { font-size: 18px; display: block; margin-bottom: 4px; transition: transform 0.2s; }
+        .nav-dot { position: absolute; top: 1px; right: 10px; width: 9px; height: 9px; background: var(--red); border-radius: 50%; border: 2px solid #fff; display: none; }
+        .nav-dot.show { display: block; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: #fff; width: 90%; max-width: 380px; padding: 25px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
-        
-        .profile-pic { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 10px; }
-        .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; display: flex; justify-content: space-between; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; background: #f9f9f9; outline: none; }
-        .section { display: none; } .section.active { display: block; }
-        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; }
+        /* ===== MODAL (BOTTOM SHEET) ===== */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
+        .modal.show { display: flex; }
+        .modal-content { background: #fff; width: 100%; max-width: 520px; padding: 20px 22px 28px; border-radius: 28px 28px 0 0; max-height: 88vh; overflow-y: auto; animation: sheetUp 0.38s cubic-bezier(0.34,1.4,0.64,1); }
+        @keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        .modal-handle { width: 42px; height: 4px; background: #e2e8f0; border-radius: 4px; margin: 0 auto 18px; }
+        .modal-title { font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 15px; }
+
+        /* ===== PROFILE ===== */
+        .profile-pic { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid var(--main); margin-bottom: 12px; box-shadow: 0 6px 18px rgba(44,123,229,0.22); }
+        .history-item { padding: 12px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .h-pill { padding: 3px 11px; border-radius: 50px; font-size: 10px; font-weight: 700; }
+        .h-pending { background: #fef3c7; color: #92400e; }
+        .h-accepted { background: #dcfce7; color: #15803d; }
+        .h-rejected { background: #fee2e2; color: #b91c1c; }
+
+        /* ===== INPUTS ===== */
+        input, textarea { width: 100%; padding: 12px 15px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 12px; background: #f8fafc; outline: none; font-size: 13px; font-family: 'Poppins', sans-serif; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+        input:focus, textarea:focus { border-color: var(--main); background: #fff; box-shadow: 0 0 0 3px rgba(44,123,229,0.08); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 55px 20px; }
+        .empty-state i { font-size: 50px; color: #cbd5e1; margin-bottom: 15px; display: block; }
+        .empty-state h3 { color: #94a3b8; font-size: 16px; font-weight: 700; }
+        .empty-state p { color: #cbd5e1; font-size: 12px; margin-top: 6px; }
+
+        /* ===== WALLET HEADER ===== */
+        .wallet-header { background: linear-gradient(135deg, var(--main), #6366f1); color: white; padding: 32px 25px; border-radius: 25px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .wallet-header::before { content:''; position:absolute; width:130px; height:130px; background:rgba(255,255,255,0.07); border-radius:50%; top:-35px; right:-35px; }
+        .wallet-header::after { content:''; position:absolute; width:90px; height:90px; background:rgba(255,255,255,0.05); border-radius:50%; bottom:-25px; left:20px; }
+
+        /* ===== ROOM MODAL CARDS ===== */
+        .room-card { padding: 18px; border-radius: 14px; text-align: center; }
+        .room-card.room-id { background: #f0f9ff; border: 1px solid #bae6fd; }
+        .room-card.room-pass { background: #f0fdf4; border: 1px solid #bbf7d0; }
+
+        /* ===== INFO NOTICE ===== */
+        .info-notice { background: #f8fafc; padding: 11px 14px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 12px; color: #475569; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .fee-notice { background: #fffbeb; padding: 11px 14px; border-radius: 12px; border: 1px solid #fde68a; font-size: 12px; color: #92400e; margin-bottom: 10px; }
+        .rules-box { background: #f8fafc; padding: 14px; border-radius: 12px; border-left: 3px solid var(--main); margin-bottom: 14px; }
+        .rules-box p { font-size: 13px; color: #475569; line-height: 1.7; }
     </style>
 </head>
 <body>
 
+    <!-- ===== LOADING SPLASH ===== -->
+    <div id="loadOverlay">
+        <div class="load-logo"><i class="fas fa-gamepad"></i></div>
+        <div class="load-dots">
+            <div class="load-dot"></div>
+            <div class="load-dot"></div>
+            <div class="load-dot"></div>
+        </div>
+        <div class="load-text">LOADING ARENA...</div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast"><i id="toastIcon" class="fas fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+    <!-- ===== SIGN IN ===== -->
     <div id="authOverlay">
-        <div style="width: 85%; max-width: 350px;">
-            <div style="background:var(--main); width:70px; height:70px; border-radius:20px; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:30px;"><i class="fas fa-gamepad"></i></div>
-            <h2>Sign In</h2>
+        <div class="auth-card">
+            <div class="auth-icon"><i class="fas fa-gamepad"></i></div>
+            <div class="auth-title">PS Tournament Pro</div>
+            <div class="auth-sub">Sign in to enter the arena</div>
             <input type="text" id="logName" placeholder="Full Name">
             <input type="number" id="logPhone" placeholder="WhatsApp Number">
-            <button class="btn btn-main" style="width:100%; margin-top:10px" onclick="userLogin()">ENTER ARENA</button>
+            <button class="btn btn-main" style="width:100%; margin-top:12px; padding:14px;" onclick="userLogin()">
+                <i class="fas fa-gamepad"></i> ENTER ARENA
+            </button>
         </div>
     </div>
 
     <a href="#" id="waLink" class="whatsapp-fab" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
     <header>
-        <div class="logo">PS PRO</div>
+        <div class="logo">PS <span>PRO</span></div>
         <div class="balance-badge">৳<span id="balDisplay">0</span></div>
     </header>
 
-    <marquee id="annTicker">Welcome to PS Tournament Pro!</marquee>
+    <div class="ticker-bar">
+        <span class="ticker-label">📢 LIVE</span>
+        <marquee id="annTicker">Welcome to PS Tournament Pro!</marquee>
+    </div>
 
     <div class="container">
-        <div id="homeSec" class="section active"><div id="tourneyList"></div></div>
 
+        <!-- HOME -->
+        <div id="homeSec" class="section active">
+            <div id="tourneyList"></div>
+        </div>
+
+        <!-- WALLET -->
         <div id="walletSec" class="section">
-            <div style="background:linear-gradient(135deg, var(--main), #6366f1); color:white; padding:30px; border-radius:25px; text-align:center; margin-bottom:20px;">
-                <p style="font-size:12px; opacity:0.8;">Account Balance</p>
-                <h1 style="font-size:35px;">৳<span id="walletBal">0</span></h1>
-                <button class="btn" style="background:rgba(255,255,255,0.2); margin:10px auto 0;" onclick="openHistory()">History</button>
+            <div class="wallet-header">
+                <p style="font-size:12px; opacity:0.8; margin-bottom:6px;">Account Balance</p>
+                <h1 style="font-size:40px; font-weight:800; letter-spacing:-1.5px; position:relative; z-index:1;">৳<span id="walletBal">0</span></h1>
+                <button class="btn" style="background:rgba(255,255,255,0.2); margin:14px auto 0; backdrop-filter:blur(5px); position:relative; z-index:1;" onclick="openHistory()">
+                    <i class="fas fa-history"></i> Transaction History
+                </button>
             </div>
-            <div style="background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
-                <p style="font-size:12px; margin-bottom:10px;"><b>Admin Numbers:</b> Bkash: <span id="pBkash">--</span> | Nagad: <span id="pNagad">--</span></p>
-                <input type="number" id="wAmt" placeholder="Amount">
-                <input type="text" id="wInfo" placeholder="TrxID / Phone">
+            <div style="background:#fff; padding:20px; border-radius:20px; border:1px solid #eee; box-shadow:0 5px 15px rgba(0,0,0,0.04);">
+                <div class="info-notice">
+                    <i class="fas fa-info-circle" style="color:var(--main); flex-shrink:0;"></i>
+                    <span><b>Send to:</b> Bkash: <b><span id="pBkash">--</span></b> &nbsp;|&nbsp; Nagad: <b><span id="pNagad">--</span></b></span>
+                </div>
+                <input type="number" id="wAmt" placeholder="Amount (৳)">
+                <input type="text" id="wInfo" placeholder="TrxID / Phone Number">
                 <div class="btn-grid">
-                    <button class="btn btn-main" style="background:var(--green)" onclick="walletReq('Deposit')">DEPOSIT</button>
-                    <button class="btn btn-main" style="background:var(--red)" onclick="walletReq('Withdraw')">WITHDRAW</button>
+                    <button class="btn" style="background:linear-gradient(135deg,var(--green),#10b981); color:#fff; box-shadow:0 4px 14px rgba(45,206,137,0.3);" onclick="walletReq('Deposit')">
+                        <i class="fas fa-plus-circle"></i> DEPOSIT
+                    </button>
+                    <button class="btn" style="background:linear-gradient(135deg,var(--red),#ef4444); color:#fff; box-shadow:0 4px 14px rgba(245,54,92,0.3);" onclick="walletReq('Withdraw')">
+                        <i class="fas fa-minus-circle"></i> WITHDRAW
+                    </button>
                 </div>
             </div>
         </div>
 
+        <!-- PROFILE -->
         <div id="profileSec" class="section">
-            <div style="background:#fff; padding:30px; border-radius:25px; text-align:center; border:1px solid #eee;">
+            <div style="background:#fff; padding:32px 25px; border-radius:25px; text-align:center; border:1px solid #eee; box-shadow:0 6px 22px rgba(0,0,0,0.05);">
                 <img id="uPhoto" src="https://ui-avatars.com/api/?name=Gamer" class="profile-pic">
-                <h2 id="uNameDisplay">Name</h2><p id="uPhoneDisplay">Phone</p>
-                <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="openProfileEdit()">Edit Profile</button>
-                <button class="btn btn-dark" style="width:100%; margin-top:10px;" onclick="logout()">LOGOUT</button>
+                <h2 id="uNameDisplay" style="font-size:19px; font-weight:700; color:var(--dark);">Name</h2>
+                <p id="uPhoneDisplay" style="color:#94a3b8; font-size:13px; margin-top:4px;"><i class="fas fa-phone" style="font-size:10px;"></i> Phone</p>
+                <button class="btn btn-outline" style="width:100%; margin-top:18px;" onclick="openProfileEdit()">
+                    <i class="fas fa-pencil-alt"></i> Edit Profile / Number
+                </button>
+                <button class="btn btn-dark" style="width:100%; margin-top:10px;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                </button>
             </div>
-            <div style="margin-top:20px; background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
-                <h3>Report Issue</h3>
-                <textarea id="repMsg" placeholder="Message to Admin..."></textarea>
-                <button class="btn btn-main" style="width:100%" onclick="sendReport()">SEND REPORT</button>
+            <div style="margin-top:18px; background:#fff; padding:20px; border-radius:20px; border:1px solid #eee;">
+                <h3 style="font-size:14px; margin-bottom:12px; display:flex; align-items:center; gap:8px; color:var(--dark);">
+                    <i class="fas fa-flag" style="color:var(--red);"></i> Report an Issue
+                </h3>
+                <textarea id="repMsg" placeholder="Describe your issue in detail..." rows="3"></textarea>
+                <button class="btn btn-main" style="width:100%; margin-top:8px;" onclick="sendReport()">
+                    <i class="fas fa-paper-plane"></i> SEND REPORT
+                </button>
             </div>
         </div>
+
     </div>
 
-    <!-- Modals -->
+    <!-- MODAL (Bottom Sheet) -->
     <div id="modalBox" class="modal">
         <div class="modal-content">
-            <h3 id="modalTitle">Title</h3>
+            <div class="modal-handle"></div>
+            <div class="modal-title" id="modalTitle">Title</div>
             <div id="modalBody"></div>
-            <button class="btn btn-dark" style="width:100%; margin-top:15px;" onclick="closeModal()">CLOSE</button>
+            <button class="btn btn-dark" style="width:100%; margin-top:16px;" onclick="closeModal()">
+                <i class="fas fa-times"></i> CLOSE
+            </button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchNav('home', this)"><i class="fas fa-home"></i>Home</button>
-        <button class="nav-item" onclick="switchNav('wallet', this)"><i class="fas fa-wallet"></i>Wallet</button>
-        <button class="nav-item" onclick="switchNav('profile', this)"><i class="fas fa-user-circle"></i>Profile</button>
+        <button class="nav-item active" onclick="switchNav('home', this)">
+            <i class="fas fa-home"></i>Home
+        </button>
+        <button class="nav-item" onclick="switchNav('wallet', this)" id="walletNavBtn">
+            <i class="fas fa-wallet"></i>Wallet
+            <span class="nav-dot" id="walletDot"></span>
+        </button>
+        <button class="nav-item" onclick="switchNav('profile', this)">
+            <i class="fas fa-user-circle"></i>Profile
+        </button>
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -135,62 +288,137 @@
         const db = firebase.database();
 
         let user = JSON.parse(localStorage.getItem('ps_user'));
-        if(!user) document.getElementById('authOverlay').style.display='flex'; else startApp();
+
+        // Show loading splash, then init
+        setTimeout(() => {
+            const lo = document.getElementById('loadOverlay');
+            lo.classList.add('hide');
+            setTimeout(() => lo.style.display = 'none', 450);
+            if (!user) document.getElementById('authOverlay').style.display = 'flex';
+            else startApp();
+        }, 1400);
 
         function userLogin() {
-            const name = document.getElementById('logName').value;
-            const phone = document.getElementById('logPhone').value;
-            if(!name || phone.length < 11) return alert("Valid Info Required");
-            db.ref('users/'+phone).once('value', s => {
-                if(s.val() && s.val().status === 'Blocked') return alert("Blocked!");
-                if(!s.exists()) db.ref('users/'+phone).set({name, phone, balance:0, status:'Active'});
-                localStorage.setItem('ps_user', JSON.stringify({name, phone}));
+            const name = document.getElementById('logName').value.trim();
+            const phone = document.getElementById('logPhone').value.trim();
+            if (!name || phone.length < 11) return showToast("Valid name and phone required!", 'error');
+            db.ref('users/' + phone).once('value', s => {
+                if (s.val() && s.val().status === 'Blocked') return showToast("Your account has been blocked!", 'error');
+                if (!s.exists()) db.ref('users/' + phone).set({ name, phone, balance: 0, status: 'Active' });
+                localStorage.setItem('ps_user', JSON.stringify({ name, phone }));
                 location.reload();
             });
         }
 
         function startApp() {
-            db.ref('users/'+user.phone).on('value', s => {
-                const u = s.val(); if(!u || u.status === 'Blocked') { logout(); return; }
+            showSkeletons();
+
+            db.ref('users/' + user.phone).on('value', s => {
+                const u = s.val();
+                if (!u || u.status === 'Blocked') { logout(); return; }
                 document.getElementById('uNameDisplay').innerText = u.name;
                 document.getElementById('uPhoneDisplay').innerText = user.phone;
-                document.getElementById('uPhoto').src = u.photo || `https://ui-avatars.com/api/?name=${u.name}&background=random`;
+                document.getElementById('uPhoto').src = u.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random`;
                 document.getElementById('balDisplay').innerText = u.balance || 0;
                 document.getElementById('walletBal').innerText = u.balance || 0;
             });
-            db.ref('announcement').on('value', s => { document.getElementById('annTicker').innerText = s.val() || ''; });
+
+            db.ref('announcement').on('value', s => {
+                document.getElementById('annTicker').innerText = s.val() || 'Welcome to PS Tournament Pro!';
+            });
+
             db.ref('admin_numbers').on('value', s => {
-                if(s.val()) {
+                if (s.val()) {
                     document.getElementById('pBkash').innerText = s.val().bkash;
                     document.getElementById('pNagad').innerText = s.val().nagad;
                     document.getElementById('waLink').href = "https://wa.me/" + s.val().support;
                 }
             });
+
+            // Wallet pending notification dot
+            db.ref('wallet_requests').on('value', s => {
+                let hasPending = false;
+                s.forEach(c => { if (c.val().phone === user.phone && c.val().status === 'Pending') hasPending = true; });
+                document.getElementById('walletDot').classList.toggle('show', hasPending);
+            });
+
             renderTournaments();
+        }
+
+        function showSkeletons() {
+            document.getElementById('tourneyList').innerHTML = Array(2).fill(0).map(() => `
+                <div class="sk-card">
+                    <div class="skeleton sk-img"></div>
+                    <div class="sk-body">
+                        <div class="skeleton sk-line" style="width:40%; height:10px; margin-bottom:8px;"></div>
+                        <div class="skeleton sk-line" style="width:72%;"></div>
+                        <div class="skeleton sk-line" style="width:55%;"></div>
+                        <div class="skeleton sk-line" style="width:88%;"></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+                            <div class="skeleton sk-btn"></div>
+                            <div class="skeleton sk-btn"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function renderTournaments() {
             db.ref('tournaments').on('value', s => {
-                const list = document.getElementById('tourneyList'); list.innerHTML = '';
+                const list = document.getElementById('tourneyList');
+                list.innerHTML = '';
+
+                if (!s.exists() || s.numChildren() === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <h3>No Tournaments Available</h3>
+                            <p>Check back soon for upcoming matches!</p>
+                        </div>`;
+                    return;
+                }
+
                 s.forEach(child => {
                     const t = child.val();
                     const pCount = t.players ? Object.keys(t.players).length : 0;
                     const limit = t.limit || 100;
+                    const isFull = pCount >= limit;
+                    const isClosed = t.status === 'Closed';
+                    const pct = Math.min((pCount / limit) * 100, 100);
+
+                    let badgeClass, badgeText;
+                    if (isClosed) { badgeClass = 's-closed'; badgeText = '🔒 CLOSED'; }
+                    else if (isFull) { badgeClass = 's-full'; badgeText = '🔥 FULL'; }
+                    else { badgeClass = 's-open'; badgeText = '● OPEN'; }
+
+                    const disabled = (isFull || isClosed) ? 'style="opacity:0.45;pointer-events:none;"' : '';
+
                     list.innerHTML += `
                     <div class="card">
-                        <img src="${t.poster || 'https://via.placeholder.com/400x200?text=Gaming'}" class="card-img" onclick="showResult('${t.resultImg}')">
+                        <img src="${t.poster || 'https://via.placeholder.com/400x200?text=Gaming'}" class="card-img" onclick="showResult('${t.resultImg || ''}')">
                         <div class="card-body">
-                            <h2 style="font-size:17px;">${t.title}</h2>
-                            <p style="font-size:12px; color:#888;">৳${t.fee} | ৳${t.prize} | ${t.time}</p>
-                            <div class="progress-container"><div class="progress-bar" style="width:${(pCount/limit)*100}%"></div></div>
-                            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px;">
-                                <span>Slots: ${pCount}/${limit}</span>
-                                <span style="color:var(--main); font-weight:700" onclick="viewPlayers('${child.key}')">View Players</span>
+                            <span class="status-badge ${badgeClass}"><span class="s-dot"></span>${badgeText}</span>
+                            <h2 style="font-size:17px; font-weight:700; color:var(--dark); margin-bottom:5px;">${t.title}</h2>
+                            <p style="font-size:12px; color:#64748b; margin-bottom:2px;">
+                                <i class="fas fa-coins" style="color:var(--orange); width:15px;"></i> Fee: <b>৳${t.fee}</b> &nbsp;&nbsp;
+                                <i class="fas fa-trophy" style="color:var(--green); width:15px;"></i> Prize: <b>৳${t.prize}</b>
+                            </p>
+                            <p style="font-size:12px; color:#94a3b8; margin-bottom:2px;"><i class="fas fa-clock" style="width:15px;"></i> ${t.time}</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width:${pct}%; ${isFull ? 'background:var(--red);' : isClosed ? 'background:#94a3b8;' : ''}"></div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px; color:#64748b;">
+                                <span><i class="fas fa-users" style="color:var(--main);"></i> ${pCount}/${limit} Players</span>
+                                <span style="color:var(--main); font-weight:700; cursor:pointer;" onclick="viewPlayers('${child.key}')">View Players →</span>
                             </div>
                             <div class="btn-grid">
-                                <button class="btn btn-main" onclick="joinWithRules('${child.key}', ${t.fee}, ${pCount}, ${limit}, '${t.rules || 'No rules'}')">JOIN</button>
-                                <button class="btn btn-dark" onclick="showRoom('${child.key}')">ID & PASS</button>
-                                ${t.stream ? `<a href="${t.stream}" class="btn btn-outline" target="_blank">LIVE</a>` : ''}
+                                <button class="btn btn-main" onclick="joinWithRules('${child.key}', ${t.fee}, ${pCount}, ${limit}, '${(t.rules || 'No special rules.').replace(/'/g, "\\'")}', '${t.status || 'Open'}')" ${disabled}>
+                                    <i class="fas fa-gamepad"></i> JOIN
+                                </button>
+                                <button class="btn btn-dark" onclick="showRoom('${child.key}')">
+                                    <i class="fas fa-key"></i> ID & PASS
+                                </button>
+                                ${t.stream ? `<a href="${t.stream}" class="btn btn-outline" target="_blank" style="grid-column:1/-1;"><i class="fas fa-video" style="color:var(--red);"></i> WATCH LIVE</a>` : ''}
                             </div>
                         </div>
                     </div>`;
@@ -198,77 +426,183 @@
             });
         }
 
+        // ===== Profile Edit =====
         function openProfileEdit() {
-            openModal("Edit Profile", `
+            openModal("✏️ Edit Profile", `
                 <input type="text" id="newName" placeholder="New Name">
+                <input type="number" id="newPh" placeholder="New Phone Number">
                 <input type="text" id="newPhoto" placeholder="Photo URL (Direct Link)">
-                <button class="btn btn-main" style="width:100%" onclick="saveProfile()">UPDATE</button>
+                <p style="font-size:11px; color:var(--red); margin-top:6px; padding:10px 12px; background:#fff5f5; border-radius:10px; border:1px solid #fecaca;">
+                    <i class="fas fa-exclamation-circle"></i> Changing phone number will migrate your session.
+                </p>
+                <button class="btn btn-main" style="width:100%; margin-top:14px;" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> UPDATE PROFILE
+                </button>
             `);
-            db.ref('users/'+user.phone).once('value', s => {
+            db.ref('users/' + user.phone).once('value', s => {
                 document.getElementById('newName').value = s.val().name;
+                document.getElementById('newPh').value = s.val().phone;
                 document.getElementById('newPhoto').value = s.val().photo || '';
             });
         }
 
         function saveProfile() {
+            const oldPhone = user.phone;
             const name = document.getElementById('newName').value;
             const photo = document.getElementById('newPhoto').value;
-            db.ref('users/'+user.phone).update({name, photo});
-            db.ref('profile_updates/'+user.phone).set({name, photo, phone: user.phone, time: new Date().toLocaleString()});
-            closeModal(); alert("Profile Updated!");
+            const phone = document.getElementById('newPh').value;
+            if (!name || phone.length < 11) return showToast("Valid Name and Phone required!", 'error');
+            if (phone !== oldPhone) {
+                db.ref('users/' + oldPhone).once('value', s => {
+                    const currentData = s.val();
+                    db.ref('users/' + phone).set({ ...currentData, name, phone, photo }).then(() => {
+                        db.ref('users/' + oldPhone).remove();
+                        db.ref('profile_updates/' + phone).set({ name, photo, phone, oldPhone, time: new Date().toLocaleString() });
+                        localStorage.setItem('ps_user', JSON.stringify({ name, phone }));
+                        location.reload();
+                    });
+                });
+            } else {
+                db.ref('users/' + phone).update({ name, photo });
+                db.ref('profile_updates/' + phone).set({ name, photo, phone, time: new Date().toLocaleString() });
+                closeModal();
+                showToast("Profile Updated! ✅", 'success');
+            }
         }
 
-        function joinWithRules(id, fee, count, limit, rules) {
-            if(count >= limit) return alert("Full!");
-            openModal("Match Rules", `<p style="font-size:13px; color:#555">${rules}</p><button class="btn btn-main" style="width:100%; margin-top:15px" onclick="confirmJoin('${id}', ${fee})">AGREE & JOIN</button>`);
+        // ===== Join Tournament =====
+        function joinWithRules(id, fee, count, limit, rules, status) {
+            if (count >= limit) return showToast("Tournament is full!", 'error');
+            if (status === 'Closed') return showToast("Tournament is closed!", 'error');
+            openModal("📋 Match Rules", `
+                <div class="rules-box"><p>${rules}</p></div>
+                <div class="fee-notice"><i class="fas fa-coins"></i> Entry Fee: <b>৳${fee}</b> will be deducted from your wallet balance.</div>
+                <button class="btn btn-main" style="width:100%;" onclick="confirmJoin('${id}', ${fee})">
+                    <i class="fas fa-check-circle"></i> AGREE & JOIN
+                </button>
+            `);
         }
 
         function confirmJoin(id, fee) {
-            db.ref('users/'+user.phone+'/balance').once('value', s => {
-                if((s.val() || 0) < fee) return alert("Low Balance!");
-                db.ref(`tournaments/${id}/players/${user.phone}`).set({name: user.name});
+            db.ref('users/' + user.phone + '/balance').once('value', s => {
+                if ((s.val() || 0) < fee) return showToast("Insufficient balance! Please deposit first.", 'error');
+                db.ref(`tournaments/${id}/players/${user.phone}`).set({ name: user.name, phone: user.phone });
                 db.ref(`users/${user.phone}/balance`).transaction(c => (c || 0) - fee);
-                closeModal(); alert("Joined!");
+                closeModal();
+                showToast("Joined Successfully! 🎮", 'success');
             });
         }
 
+        // ===== Wallet History =====
         function openHistory() {
             db.ref('wallet_requests').once('value', s => {
-                let html = ""; s.forEach(c => {
-                    const r = c.val(); if(r.phone === user.phone) html += `<div class="history-item"><span>${r.type} ৳${r.amount}</span> <b>${r.status}</b></div>`;
+                let html = "";
+                s.forEach(c => {
+                    const r = c.val();
+                    if (r.phone === user.phone) {
+                        const cls = r.status === 'Pending' ? 'h-pending' : r.status === 'Accept' ? 'h-accepted' : 'h-rejected';
+                        html += `<div class="history-item">
+                            <span>${r.type === 'Deposit' ? '💰' : '💸'} ${r.type} <b>৳${r.amount}</b></span>
+                            <span class="h-pill ${cls}">${r.status}</span>
+                        </div>`;
+                    }
                 });
-                openModal("History", html || "No records.");
+                openModal("💳 Transaction History", html || `<div class="empty-state" style="padding:30px 0;"><i class="fas fa-receipt"></i><h3>No Transactions Yet</h3></div>`);
             });
         }
 
+        // ===== Room Info =====
         function showRoom(id) {
-            db.ref('tournaments/'+id).once('value', s => {
-                const t = s.val(); if(t.players && t.players[user.phone]) alert(`ID: ${t.roomId || 'Wait'}\nPass: ${t.roomPass || 'Wait'}`);
-                else alert("Join first!");
+            db.ref('tournaments/' + id).once('value', s => {
+                const t = s.val();
+                if (t.players && t.players[user.phone]) {
+                    openModal("🔑 Room Credentials", `
+                        <div style="display:grid; gap:10px; margin-top:5px;">
+                            <div class="room-card room-id">
+                                <p style="font-size:11px; color:#0284c7; font-weight:700; margin-bottom:6px;">ROOM ID</p>
+                                <h2 style="font-size:26px; font-weight:800; letter-spacing:3px; color:var(--dark);">${t.roomId || '⏳ Not yet'}</h2>
+                            </div>
+                            <div class="room-card room-pass">
+                                <p style="font-size:11px; color:#15803d; font-weight:700; margin-bottom:6px;">PASSWORD</p>
+                                <h2 style="font-size:26px; font-weight:800; letter-spacing:3px; color:var(--dark);">${t.roomPass || '⏳ Not yet'}</h2>
+                            </div>
+                        </div>
+                    `);
+                } else {
+                    showToast("You must join the tournament first!", 'info');
+                }
             });
         }
 
+        // ===== View Players =====
         function viewPlayers(id) {
-            db.ref('tournaments/'+id+'/players').once('value', s => {
-                let h = ""; s.forEach(p => h += `<div class="history-item">${p.val().name}</div>`);
-                openModal("Players", h || "Empty.");
+            db.ref('tournaments/' + id + '/players').once('value', s => {
+                let h = ""; let i = 1;
+                s.forEach(p => h += `<div class="history-item"><span><b style="color:var(--main); margin-right:8px;">#${i++}</b>${p.val().name}</span></div>`);
+                openModal("👥 Registered Players", h || `<div class="empty-state" style="padding:20px 0;"><i class="fas fa-users"></i><h3>No Players Yet</h3></div>`);
             });
         }
 
+        // ===== Wallet Request =====
         function walletReq(type) {
             const amt = parseInt(document.getElementById('wAmt').value);
-            const info = document.getElementById('wInfo').value;
-            if(!amt || !info) return alert("Fill data");
-            db.ref('wallet_requests/'+Date.now()).set({phone:user.phone, userName:user.name, amount:amt, info, type, status:'Pending'});
-            alert("Request Sent!");
+            const info = document.getElementById('wInfo').value.trim();
+            if (!amt || !info) return showToast("Please fill in all fields!", 'error');
+            db.ref('wallet_requests/' + Date.now()).set({ phone: user.phone, userName: user.name, amount: amt, info, type, status: 'Pending' });
+            document.getElementById('wAmt').value = '';
+            document.getElementById('wInfo').value = '';
+            showToast(`${type} request sent! ✅`, 'success');
         }
 
-        function showResult(img) { if(img) openModal("Result", `<img src="${img}" style="width:100%">`); }
-        function sendReport() { db.ref('reports/'+Date.now()).set({phone:user.phone, userName:user.name, message:document.getElementById('repMsg').value}); alert("Sent!"); }
-        function openModal(t, b) { document.getElementById('modalTitle').innerText = t; document.getElementById('modalBody').innerHTML = b; document.getElementById('modalBox').style.display='flex'; }
-        function closeModal() { document.getElementById('modalBox').style.display='none'; }
-        function switchNav(id, btn) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); document.getElementById(id+'Sec').classList.add('active'); btn.classList.add('active'); }
+        // ===== Result =====
+        function showResult(img) {
+            if (img) openModal("🏆 Match Result", `<img src="${img}" style="width:100%; border-radius:14px;">`);
+        }
+
+        // ===== Report =====
+        function sendReport() {
+            const msg = document.getElementById('repMsg').value.trim();
+            if (!msg) return showToast("Please describe your issue!", 'error');
+            db.ref('reports/' + Date.now()).set({ phone: user.phone, userName: user.name, message: msg });
+            document.getElementById('repMsg').value = '';
+            showToast("Report sent successfully!", 'success');
+        }
+
+        // ===== Modal =====
+        function openModal(t, b) {
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalBody').innerHTML = b;
+            document.getElementById('modalBox').classList.add('show');
+            document.getElementById('modalBox').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('modalBox').style.display = 'none';
+            document.getElementById('modalBox').classList.remove('show');
+        }
+
+        // ===== Navigation =====
+        function switchNav(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById(id + 'Sec').classList.add('active');
+            btn.classList.add('active');
+        }
+
         function logout() { localStorage.clear(); location.reload(); }
+
+        // ===== Toast =====
+        function showToast(m, type = 'default') {
+            const t = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            t.className = '';
+            if (type === 'success') { t.classList.add('t-success'); icon.className = 'fas fa-check-circle'; }
+            else if (type === 'error') { t.classList.add('t-error'); icon.className = 'fas fa-times-circle'; }
+            else if (type === 'info') { t.classList.add('t-info'); icon.className = 'fas fa-info-circle'; }
+            else { icon.className = 'fas fa-bell'; }
+            document.getElementById('toastMsg').innerText = m;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
     </script>
 </body>
-                                                                         </html>
+</html>
